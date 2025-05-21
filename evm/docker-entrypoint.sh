@@ -18,17 +18,22 @@ if [[ ! -f /data/config.json ]]; then
     mv /data/config.updated.json /data/config.json
 fi
 
-# Use snapshot
-__snapshot=""
-if [ ! -d "/data/wasm_2_0_0" ]; then
-    __snapshot="--init-from-snapshot"
-fi
-
 # Start node
-exec octez-evm-node run observer \
-    --data-dir /data \
-    --rollup-node-endpoint http://rollup:8932 \
-    --network "${NETWORK}" \
-    --rpc-addr 0.0.0.0 \
-    --rpc-batch-limit unlimited \
-    --history full:1 "${__snapshot}"
+if [ ! -d "/data/wasm_2_0_0" ]; then
+    exec octez-evm-node run observer \
+        --data-dir /data \
+        --rollup-node-endpoint http://rollup:8932 \
+        --network "${NETWORK}" \
+        --rpc-addr 0.0.0.0 \
+        --rpc-batch-limit unlimited \
+        --history full:1 \
+        --init-from-snapshot
+else
+    exec octez-evm-node run observer \
+        --data-dir /data \
+        --rollup-node-endpoint http://rollup:8932 \
+        --network "${NETWORK}" \
+        --rpc-addr 0.0.0.0 \
+        --rpc-batch-limit unlimited \
+        --history full:1
+fi
