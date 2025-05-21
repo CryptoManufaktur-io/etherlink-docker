@@ -1,6 +1,6 @@
 # Overview
 
-Docker Compose for name-of-project
+Docker Compose for etherlink
 
 Meant to be used with [central-proxy-docker](https://github.com/CryptoManufaktur-io/central-proxy-docker) for traefik
 and Prometheus remote write; use `:ext-network.yml` in `COMPOSE_FILE` inside `.env` in that case.
@@ -9,19 +9,19 @@ If you want the RPC ports exposed locally, use `rpc-shared.yml` in `COMPOSE_FILE
 
 ## Quick Start
 
-The `./projectd` script can be used as a quick-start:
+The `./etherlinkd` script can be used as a quick-start:
 
-`./projectd install` brings in docker-ce, if you don't have Docker installed already.
+`./etherlinkd install` brings in docker-ce, if you don't have Docker installed already.
 
 `cp default.env .env`
 
 `nano .env` and adjust variables as needed, particularly mention-important-vars-here
 
-`./projectd up`
+`./etherlinkd up`
 
 ## Software update
 
-To update the software, run `./projectd update` and then `./projectd up`
+To update the software, run `./etherlinkd update` and then `./etherlinkd up`
 
 ## Customization
 
@@ -30,6 +30,6 @@ add it to `COMPOSE_FILE` in `.env`
 
 ## Version
 
-name-of-project Docker uses a semver scheme.
+etherlink Docker uses a semver scheme.
 
-This is name-of-project Docker v1.0.0
+This is etherlink Docker v1.0.0

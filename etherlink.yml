@@ -1,0 +1,28 @@
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100m
+      max-file: "3"
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  rollup:
+    build:
+      context: ./rollup
+      dockerfile: Dockerfile
+      args:
+        - ROLLUP_TAG=${ROLLUP_TAG}
+    image: rollup-custom:${ROLLUP_TAG}
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      - NETWORK=${NETWORK}
+    entrypoint: docker-entrypoint.sh
+    volumes:
+      - ./rollup/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - rollup_data:/data
+    <<: *logging
+
+volumes:
+  rollup_data:

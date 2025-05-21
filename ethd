@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-__project_name="X Docker"
+__project_name="Etherlink Docker"
 __app_name="X node"
-__sample_service="X-geth"
+__sample_service="rollup"
 __docker_exe="docker"
 __compose_exe="docker compose"
 __compose_upgraded=0
@@ -41,7 +41,7 @@ start() {
 #    ${__auto_sudo} apt-get update && ${__auto_sudo} apt-get install -y screen
 #  fi
 # If multiples of this stack may run on one host, distinguish by something unique. Otherwise just set a value here with
-# __screen_id=<name-of-project>
+# __screen_id=<etherlink>
 # OR the next three lines
 # __var="NETWORK"
 # __get_value_from_env "${__var}" "${__env_file}" "__screen_id"
