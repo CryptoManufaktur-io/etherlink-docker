@@ -12,17 +12,52 @@ services:
       context: ./rollup
       dockerfile: Dockerfile
       args:
-        - ROLLUP_TAG=${ROLLUP_TAG}
-    image: rollup-custom:${ROLLUP_TAG}
-    pull_policy: always
+        - ROLLUP_NODE_TAG=${ROLLUP_NODE_TAG}
+    image: rollup:${ROLLUP_NODE_TAG}
+    pull_policy: never
     restart: unless-stopped
     environment:
       - NETWORK=${NETWORK}
+      - ROLLUP_SNAPSHOT=${ROLLUP_SNAPSHOT:-}
     entrypoint: docker-entrypoint.sh
     volumes:
       - ./rollup/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
       - rollup_data:/data
     <<: *logging
+    labels:
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=6060
+      - metrics.network=${NETWORK:-}
+
+  evm:
+    build:
+      context: ./evm
+      dockerfile: Dockerfile
+      args:
+        - EVM_NODE_TAG=${EVM_NODE_TAG}
+    image: evm:${EVM_NODE_TAG}
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      - NETWORK=${NETWORK}
+    entrypoint: docker-entrypoint.sh
+    volumes:
+      - ./evm/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - evm_data:/data
+    <<: *logging
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${RPC_HOST:-etherlink}.service=${RPC_HOST:-etherlink}
+      - traefik.http.routers.${RPC_HOST:-etherlink}.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST:-etherlink}.rule=Host(`${RPC_HOST:-etherlink}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST:-etherlink}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${RPC_HOST:-etherlink}lb.service=${RPC_HOST:-etherlink}
+      - traefik.http.routers.${RPC_HOST:-etherlink}lb.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST:-etherlink}lb.rule=Host(`${RPC_LB:-etherlink-lb}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST:-etherlink}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${RPC_HOST:-etherlink}.loadbalancer.server.port=8545
 
 volumes:
   rollup_data:
+  evm_data:

@@ -1,0 +1,8 @@
+services:
+  rollup:
+    ports:
+      - ${ROLLUP_PORT:-8932}:8932
+
+  evm:
+    ports:
+      - ${EVM_PORT:-8545}:8545
