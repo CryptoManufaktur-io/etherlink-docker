@@ -9,13 +9,15 @@ fi
 if [[ ! -f /data/config.json ]]; then
     octez-evm-node init config --network "${NETWORK}" \
         --data-dir /data --rollup-node-endpoint http://rollup:8932
+fi
 
-    # Enable websockets
-    jq 'if has("experimental_features") then . else . + {
-        "experimental_features": {
-            "enable_websocket": true
-        }} end' /data/config.json > /data/config.updated.json
-    mv /data/config.updated.json /data/config.json
+# Remove experimental section, websockets now enabled via --ws
+tmpfile=$(mktemp)
+jq 'del(.experimental_features)' /data/config.json > "$tmpfile"
+if ! cmp -s "$tmpfile" /data/config.json; then
+  mv "$tmpfile" /data/config.json
+else
+  rm "$tmpfile"
 fi
 
 # Start node
@@ -27,7 +29,8 @@ if [ ! -d "/data/wasm_2_0_0" ]; then
         --rpc-addr 0.0.0.0 \
         --rpc-batch-limit unlimited \
         --history full:1 \
-        --init-from-snapshot
+        --init-from-snapshot \
+        --ws
 else
     exec octez-evm-node run observer \
         --data-dir /data \
@@ -35,5 +38,6 @@ else
         --network "${NETWORK}" \
         --rpc-addr 0.0.0.0 \
         --rpc-batch-limit unlimited \
-        --history full:1
+        --history full:1 \
+        --ws
 fi
