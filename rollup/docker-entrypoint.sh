@@ -15,14 +15,19 @@ if [[ ! -f /data/config.json ]]; then
 fi
 
 # Download snapshot
-if [ -n "${ROLLUP_SNAPSHOT}" ] && [ ! -d "/data/wasm_2_0_0" ]; then
-    # Download snapshot
-    aria2c -c -x6 -s6 --auto-file-renaming=false --conditional-get=true --allow-overwrite=true "${ROLLUP_SNAPSHOT}"
+if [ -n "${ROLLUP_SNAPSHOT:-}" ] && [ ! -d "/data/wasm_2_0_0" ]; then
+    SNAP_FILE="${ROLLUP_SNAPSHOT_FILE:-snapshot}"
+    echo "Downloading snapshot to $SNAP_FILE ..."
+    if command -v aria2c >/dev/null 2>&1; then
+        aria2c -c -x6 -s6 --auto-file-renaming=false --conditional-get=true --allow-overwrite=true -o "$SNAP_FILE" "${ROLLUP_SNAPSHOT}"
+    else
+        wget -O "$SNAP_FILE" "${ROLLUP_SNAPSHOT}"
+    fi
 
-    # Importing snapshot
+    echo "Importing snapshot $SNAP_FILE ..."
     octez-smart-rollup-node --endpoint "https://rpc.tzkt.io/${NETWORK}" \
-    snapshot import "eth-${NETWORK}.full" \
-    --data-dir /data
+      snapshot import "$SNAP_FILE" \
+      --data-dir /data
 else
     echo "No snapshot fetch necessary"
 fi
