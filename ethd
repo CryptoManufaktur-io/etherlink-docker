@@ -23,10 +23,12 @@ version() {
     *evm.yml* )
       echo "EVM Node "
       __docompose exec evm octez-evm-node --version
+      echo
       ;;&
     *rollup.yml* )
       echo "Smart Rollup Node "
       __docompose exec rollup octez-smart-rollup-node --version
+      echo
       ;;&
   esac
 }
