@@ -20,7 +20,7 @@ version() {
 # Client versions
 # Adjust for your clients and how to check their version
   case "${__value}" in
-    *evm.yml* )
+    *etherlink.yml* )
       echo "EVM Node "
       __docompose exec evm octez-evm-node --version
       echo
