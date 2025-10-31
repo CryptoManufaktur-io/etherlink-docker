@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 __project_name="Etherlink Docker"
-__app_name="rollup node"
-__sample_service="rollup"
+__app_name="evm node"
+__sample_service="evm"
 __docker_exe="docker"
 __compose_exe="docker compose"
 __compose_upgraded=0
@@ -21,11 +21,14 @@ version() {
 # Adjust for your clients and how to check their version
   case "${__value}" in
     *etherlink.yml* )
+      echo "EVM Node "
+      __docompose exec evm octez-evm-node --version
+      echo
+      ;;&
+    *rollup.yml* )
       echo "Smart Rollup Node "
       __docompose exec rollup octez-smart-rollup-node --version
       echo
-      echo "EVM Node "
-      __docompose exec evm octez-evm-node --version
       ;;&
   esac
 }
