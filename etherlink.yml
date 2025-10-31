@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
     environment:
       - NETWORK=${NETWORK}
-      - EVM_ONLY=${EVM_ONLY}
+      - EVM_ONLY=${EVM_ONLY:-true}
       - ROLLUP_NODE_URL=${ROLLUP_NODE_URL:-http://rollup:8932}
     entrypoint: docker-entrypoint.sh
     volumes:
