@@ -29,20 +29,20 @@ fi
 if [ ! -d "/data/wasm_2_0_0" ]; then
     exec octez-evm-node run observer \
         --data-dir /data \
+        "${__rollup_flag}" \
         --network "${NETWORK}" \
         --rpc-addr 0.0.0.0 \
         --rpc-batch-limit unlimited \
         --history full:1 \
         --init-from-snapshot \
-        --ws \
-        "${__rollup_flag}"
+        --ws
 else
     exec octez-evm-node run observer \
         --data-dir /data \
+        "${__rollup_flag}" \
         --network "${NETWORK}" \
         --rpc-addr 0.0.0.0 \
         --rpc-batch-limit unlimited \
         --history full:1 \
-        --ws \
-        "${__rollup_flag}"
+        --ws
 fi
