@@ -5,7 +5,7 @@ Docker Compose for etherlink
 Meant to be used with [central-proxy-docker](https://github.com/CryptoManufaktur-io/central-proxy-docker) for traefik
 and Prometheus remote write; use `:ext-network.yml` in `COMPOSE_FILE` inside `.env` in that case.
 
-If you want the RPC ports exposed locally, use `rpc-shared.yml` in `COMPOSE_FILE` inside `.env`.
+If you want the RPC ports exposed locally, use `evm-shared.yml` and `rollup-shared.yml` in `COMPOSE_FILE` inside `.env`.
 
 ## Quick Start
 

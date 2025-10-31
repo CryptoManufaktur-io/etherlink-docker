@@ -5,10 +5,15 @@ if [[ "${NETWORK}" == "ghostnet" ]]; then
     NETWORK="testnet"
 fi
 
+__rollup_flag="--dont-track-rollup-node"
+if [[ "${EVM_ONLY}" != "true" ]]; then
+    __rollup_flag="--rollup-node-endpoint ${ROLLUP_NODE_URL}"
+fi
+
 # Initialize
 if [[ ! -f /data/config.json ]]; then
     octez-evm-node init config --network "${NETWORK}" \
-        --data-dir /data --rollup-node-endpoint http://rollup:8932
+        --data-dir /data "${__rollup_flag}"
 fi
 
 # Remove experimental section, websockets now enabled via --ws
@@ -24,20 +29,20 @@ fi
 if [ ! -d "/data/wasm_2_0_0" ]; then
     exec octez-evm-node run observer \
         --data-dir /data \
-        --rollup-node-endpoint http://rollup:8932 \
         --network "${NETWORK}" \
         --rpc-addr 0.0.0.0 \
         --rpc-batch-limit unlimited \
         --history full:1 \
         --init-from-snapshot \
-        --ws
+        --ws \
+        "${__rollup_flag}"
 else
     exec octez-evm-node run observer \
         --data-dir /data \
-        --rollup-node-endpoint http://rollup:8932 \
         --network "${NETWORK}" \
         --rpc-addr 0.0.0.0 \
         --rpc-batch-limit unlimited \
         --history full:1 \
-        --ws
+        --ws \
+        "${__rollup_flag}"
 fi

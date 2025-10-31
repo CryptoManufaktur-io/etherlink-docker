@@ -7,29 +7,6 @@ x-logging: &logging
       tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
 
 services:
-  rollup:
-    build:
-      context: ./rollup
-      dockerfile: Dockerfile
-      args:
-        - ROLLUP_NODE_TAG=${ROLLUP_NODE_TAG}
-    image: rollup:${ROLLUP_NODE_TAG}
-    pull_policy: never
-    restart: unless-stopped
-    environment:
-      - NETWORK=${NETWORK}
-      - ROLLUP_SNAPSHOT=${ROLLUP_SNAPSHOT:-}
-    entrypoint: docker-entrypoint.sh
-    volumes:
-      - ./rollup/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
-      - rollup_data:/data
-    <<: *logging
-    labels:
-      - metrics.scrape=true
-      - metrics.path=/metrics
-      - metrics.port=6060
-      - metrics.network=${NETWORK:-}
-
   evm:
     build:
       context: ./evm
@@ -41,6 +18,8 @@ services:
     restart: unless-stopped
     environment:
       - NETWORK=${NETWORK}
+      - EVM_ONLY=${EVM_ONLY}
+      - ROLLUP_NODE_URL=${ROLLUP_NODE_URL:-http://rollup:8932}
     entrypoint: docker-entrypoint.sh
     volumes:
       - ./evm/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
@@ -59,5 +38,4 @@ services:
       - traefik.http.services.${RPC_HOST:-etherlink}.loadbalancer.server.port=8545
 
 volumes:
-  rollup_data:
   evm_data:
