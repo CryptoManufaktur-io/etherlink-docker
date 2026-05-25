@@ -163,44 +163,6 @@ else
   fi
 fi
 
-echo "==> Checking local geth eth_syncing status"
-
-syncing_json="$(rpc_post "$LOCAL_RPC" '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}')"
-syncing_result="$(echo "$syncing_json" | jq_eval '.result | @json')"
-
-# syncing_result here is a JSON-encoded string of result. Handle "false" and objects.
-# If result is false, @json produces "false" (a JSON string containing false). For objects, it produces a JSON string.
-if [[ -z "$syncing_result" || "$syncing_result" == "null" ]]; then
-  echo "❌ Could not parse eth_syncing response. Raw response:"
-  echo "$syncing_json"
-  exit 5
-fi
-
-# Strip surrounding quotes if present (jq @json returns a JSON string)
-syncing_unquoted="$(printf '%s' "$syncing_result" | sed -e 's/^"//' -e 's/"$//')"
-
-if [[ "$syncing_unquoted" == "false" ]]; then
-  echo "eth_syncing: false (not actively syncing)"
-else
-  echo "eth_syncing: true (actively syncing)"
-  # Try to print common geth fields if present
-  startingBlock="$(printf '%s' "$syncing_unquoted" | jq_eval '.startingBlock // empty' 2>/dev/null || true)"
-  currentBlock="$(printf '%s' "$syncing_unquoted"  | jq_eval '.currentBlock  // empty' 2>/dev/null || true)"
-  highestBlock="$(printf '%s' "$syncing_unquoted"  | jq_eval '.highestBlock  // empty' 2>/dev/null || true)"
-
-  if [[ -n "${startingBlock:-}" || -n "${currentBlock:-}" || -n "${highestBlock:-}" ]]; then
-    if [[ "${startingBlock:-}" == 0x* ]]; then startingBlock="$(hex_to_dec "$startingBlock")"; fi
-    if [[ "${currentBlock:-}"  == 0x* ]]; then currentBlock="$(hex_to_dec "$currentBlock")"; fi
-    if [[ "${highestBlock:-}"  == 0x* ]]; then highestBlock="$(hex_to_dec "$highestBlock")"; fi
-    echo "  startingBlock: ${startingBlock:-?}"
-    echo "  currentBlock:  ${currentBlock:-?}"
-    echo "  highestBlock:  ${highestBlock:-?}"
-  else
-    echo "  (sync details not provided in this client response)"
-  fi
-fi
-
-echo
 echo "==> Querying local and public heads (eth_blockNumber) and estimating ETA"
 
 local_bn_json="$(rpc_post "$LOCAL_RPC" '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}')"
