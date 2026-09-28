@@ -25,6 +25,16 @@ else
   rm "$tmpfile"
 fi
 
+# Raise log_filter limits above the octez-evm-node defaults, which are too low
+# for CCIP log polling: https://github.com/tezos/tezos-mirror/blob/master/etherlink/bin_node/config/configuration.ml#L292
+tmpfile=$(mktemp)
+jq '.log_filter.max_nb_blocks = 100000 | .log_filter.max_nb_logs = 20000' /data/config.json > "$tmpfile"
+if ! cmp -s "$tmpfile" /data/config.json; then
+  mv "$tmpfile" /data/config.json
+else
+  rm "$tmpfile"
+fi
+
 # Start node
 if [ ! -d "/data/wasm_2_0_0" ]; then
     exec octez-evm-node run observer \
