@@ -13,6 +13,10 @@ The EVM node serves Prometheus metrics (`octez_evm_node_*`) at `/metrics` on its
 on 6060. Both containers carry the `metrics.*` labels that the Prometheus in central-proxy-docker discovers; use
 `:ext-network.yml` in `COMPOSE_FILE` so it can reach them. The ports are container-internal and not published.
 
+Because the EVM node serves `/metrics` on the same port as the RPC, the public Traefik routers exclude the
+`/metrics` path (`!PathPrefix(\`/metrics\`)`), so it is not reachable through the RPC hostnames. Prometheus scrapes the
+container directly over the Traefik network, which does not go through the routers.
+
 ## Quick Start
 
 The `./etherlinkd` script can be used as a quick-start:
