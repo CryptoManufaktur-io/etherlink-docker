@@ -36,6 +36,11 @@ services:
       - traefik.http.routers.${RPC_HOST:-etherlink}lb.rule=Host(`${RPC_LB:-etherlink-lb}.${DOMAIN}`)
       - traefik.http.routers.${RPC_HOST:-etherlink}lb.tls.certresolver=letsencrypt
       - traefik.http.services.${RPC_HOST:-etherlink}.loadbalancer.server.port=8545
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=8545
+      - metrics.instance=evm
+      - metrics.network=${NETWORK:-}
 
 volumes:
   evm_data:

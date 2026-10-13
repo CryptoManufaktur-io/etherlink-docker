@@ -7,6 +7,12 @@ and Prometheus remote write; use `:ext-network.yml` in `COMPOSE_FILE` inside `.e
 
 If you want the RPC ports exposed locally, use `evm-shared.yml` and `rollup-shared.yml` in `COMPOSE_FILE` inside `.env`.
 
+## Metrics
+
+The EVM node serves Prometheus metrics (`octez_evm_node_*`) at `/metrics` on its RPC port (8545), and the rollup node
+on 6060. Both containers carry the `metrics.*` labels that the Prometheus in central-proxy-docker discovers; use
+`:ext-network.yml` in `COMPOSE_FILE` so it can reach them. The ports are container-internal and not published.
+
 ## Quick Start
 
 The `./etherlinkd` script can be used as a quick-start:
